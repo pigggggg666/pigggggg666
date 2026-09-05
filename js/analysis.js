@@ -48,7 +48,7 @@
   function render(d) {
     // ---- 摘要 ----
     if (el("aSummaryWrap")) {
-      el("aSummaryWrap").innerHTML = "💡 <b>一句话摘要：</b>" +
+      el("aSummaryWrap").innerHTML = "💡 <b>摘要：</b>" +
         (d.summary || "共 46 间自习室，整体平均使用率约 29%，高峰时段集中。") +
         "（统计结果由算法组基于 2024 全年真实预约记录产出）";
     }

@@ -215,16 +215,27 @@
     }
     if (el("mRooms")) el("mRooms").textContent = (indexData && indexData.rooms ? indexData.rooms.length : "46");
 
-    var bestK = null;
-    keys.forEach(function (k) { if (!bestK || m[k].r2 > m[bestK].r2) bestK = k; });
-    if (el("mBestR2") && bestK) {
-      el("mBestR2").innerHTML = (nameMap[bestK] || bestK) + " · R²=" + Number(m[bestK].r2).toFixed(3);
+    // 评价判定：按表格展示精度（4 位小数）对齐 R²，数值相同的模型判为并列最优。
+    // 线性回归(0.41444) 与岭回归(0.414431) 四位小数均为 0.4144，应得到相同的“评价”，
+    // 不能因第 5 位微小差异一个标“最优”、一个标“一般”。
+    var r2Shown = {};
+    var bestR2v = null;
+    keys.forEach(function (k) {
+      r2Shown[k] = Math.round(Number(m[k].r2) * 10000) / 10000;
+      if (bestR2v === null || r2Shown[k] > bestR2v) bestR2v = r2Shown[k];
+    });
+    var bestKeys = keys.filter(function (k) { return r2Shown[k] === bestR2v; });
+    var bestNames = bestKeys.map(function (k) { return nameMap[k] || k; });
+    if (el("mBestR2") && bestKeys.length) {
+      el("mBestR2").innerHTML = bestNames.join(" / ") + " · R²=" + Number(m[bestKeys[0]].r2).toFixed(3);
     }
 
     var body = el("metricsBody");
     body.innerHTML = keys.map(function (k) {
-      var isBest = bestK === k;
-      var flag = isBest ? "<span class='badge best'>最优</span>" : "<span class='badge gray'>一般</span>";
+      var isBest = bestKeys.indexOf(k) !== -1;
+      var flag = isBest
+        ? "<span class='badge best'>" + (bestKeys.length > 1 ? "并列最优" : "最优") + "</span>"
+        : "<span class='badge gray'>一般</span>";
       return "<tr>" +
         "<td><b>" + (nameMap[k] || k) + "</b></td>" +
         "<td>" + (typeMap[k] || "回归") + "</td>" +

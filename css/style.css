@@ -108,10 +108,10 @@ select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,23
 /* ========== 标签 / 徽标 ========== */
 .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; padding: 3px 11px; border-radius: 999px; font-weight: 600; }
-.badge.iv1 { background: #ecfdf5; color: #047857; }
-.badge.iv2 { background: #eff6ff; color: #1d4ed8; }
-.badge.iv3 { background: #fffbeb; color: #b45309; }
-.badge.iv4 { background: #fef2f2; color: #b91c1c; }
+.badge.iv1, .badge.cv1 { background: #ecfdf5; color: #047857; }
+.badge.iv2, .badge.cv2 { background: #eff6ff; color: #1d4ed8; }
+.badge.iv3, .badge.cv3 { background: #fffbeb; color: #b45309; }
+.badge.iv4, .badge.cv4 { background: #fef2f2; color: #b91c1c; }
 .badge.gray { background: #f1f5f9; color: var(--muted); }
 .badge.best { background: #ecfdf5; color: #047857; }
 .badge.worst { background: #fef2f2; color: #b91c1c; }
