@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目介绍 · 校园自习室数据分析平台</title>
+<meta name="description" content="本平台如何用真实预约数据与机器学习分析自习室使用规律，以及这些分析结果对学生与校园管理的意义。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">📚</span>
+      <span>校园自习室数据分析平台</span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">首页</a>
+      <a href="dashboard.html">数据看板</a>
+      <a href="analysis.html">分析结果</a>
+      <a href="prediction.html">预测展示</a>
+      <a href="about.html" class="active nav-about">项目介绍</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="pagehead">
+    <span class="eyebrow">ABOUT THE PROJECT</span>
+    <h1>项目介绍</h1>
+    <p class="sub">写给第一次打开这个网站的你：这是谁做的、用了什么数据、怎么分析的，以及——这些曲线和数字，对你的一天到底意味着什么。</p>
+    <div class="meta">
+      <span class="chip blue">URL：/about.html</span>
+      <span class="chip">五人团队 · 课程项目</span>
+      <span class="chip">数据驱动决策 · 也做诚实的技术说明</span>
+    </div>
+  </section>
+
+  <div class="about-layout" style="padding-top:18px;">
+
+    <!-- 主内容 -->
+    <article class="prose">
+
+      <!-- 项目简介 -->
+      <section id="s-intro">
+        <h2>1️⃣ 这个项目是做什么的？</h2>
+        <p>在每个期末的夜晚，图书馆自习室常常“一位难求”，而另一栋楼的同一时段可能空无一人。
+          <b>选座难、资源冷热不均、高峰没有预判</b>，是很多高校学生的共同痛点。</p>
+        <p>本项目把这些痛点变成<b>数据问题</b>：用一年的真实自习室预约记录，回答三个问题——<br>
+          ① <b>整体使用节奏如何？</b>（数据看板）<br>
+          ② <b>哪些房间、哪些时段真正“热”？</b>（分析结果）<br>
+          ③ <b>能不能提前预判拥挤？</b>（预测展示）</p>
+        <div class="quote">一句话：<b>平台不制造座位，而是帮每个人更聪明地找到座位，也帮学校更聪明地安排座位。</b></div>
+      </section>
+
+      <!-- 数据来源 -->
+      <section id="s-data" style="margin-top:34px;">
+        <h2>2️⃣ 数据从哪里来？——真实、公开、可复现</h2>
+        <p>项目主分析数据来自 Kaggle 公开数据集
+          <b>“50,000+ University Library Room Reservations”</b>（50,000+ 大学图书馆房间预约记录），
+          共 <b>51,826 条</b>、覆盖 <b>2024 全年</b>、涉及 <b>46 个自习室/房间</b>。
+          全程<b>未使用任何模拟数据</b>，保证结论可溯源、可复现。</p>
+        <ul>
+          <li><b>原始字段</b>：预约开始/结束时间、时长、日期、开始小时、星期、是否周末、时段类别、房间号等。</li>
+          <li><b>清洗结果</b>：缺失值处理、异常时长剔除、格式统一（详见算法分工）。</li>
+          <li><b>补充尝试</b>：团队还编写 requests 爬虫抓取明尼苏达大学 LibCal 页面作为“真实数据采集”方法演示（样本仅 12 条，不作主分析）。</li>
+        </ul>
+        <p>⚠️ <b>口径提醒</b>：数据中的“小时”是<b>预约开始小时</b>。凌晨 0 时的高峰代表“很多预约从 0 点开始（多为跨零点预约）”，
+          并不等于“凌晨人最多”；阅读图表时请留意这一口径，这也是项目希望传递给浏览者的数据素养之一。</p>
+      </section>
+      <!-- 技术方案 -->
+      <section id="s-method" style="margin-top:34px;">
+        <h2>3️⃣ 技术怎么分析？——一条“数据 → 信息 → 决策”的流水线</h2>
+        <h3>Step 1 · 数据清洗（Pandas）</h3>
+        <p>对原始预约记录去重、处理缺失、剔除异常占用时长，把日期时间统一为可分析的格式，得到干净的标准数据集。</p>
+        <h3>Step 2 · 统计分析（描述统计 + 相关性）</h3>
+        <p>计算使用率的均值/分位数/波动，聚合“小时 × 星期”维度，并用皮尔逊相关系数检查座位总数、开始时段、星期几与使用率的关系。</p>
+        <h3>Step 3 · K-Means 热度聚类 → 四级热力地图</h3>
+        <p>以“平均使用率”为核心特征，将 46 间自习室划分为 <b>空闲 / 正常 / 热门 / 爆满</b> 四个热度等级，
+          用于一眼看出该去哪里、该扩容哪里。</p>
+        <h3>Step 4 · 回归预测 + 时间外验证</h3>
+        <p>训练 <b>线性回归、岭回归、随机森林、梯度提升</b> 四类模型，用“房间号 + 日期 + 小时”预测时段使用率。
+          关键在<b>时间序列交叉验证与 12 月时间外测试</b>：测试最优 R² ≈ 0.41，随机森林等复杂模型时间外 R² 为负——简单模型在本任务上反而更稳。</p>
+        <h3>Step 5 · Flask + ECharts 可视化</h3>
+        <p>后端提供统一 JSON 接口，前端用 ECharts 把上述结果渲染成看板、排行与预测曲线（本网站即最终交付物）。</p>
+      </section>
+
+      <!-- 关键结果 -->
+      <section id="s-result" style="margin-top:34px;">
+        <h2>4️⃣ 关键结果速览（真实数据）</h2>
+        <div class="quote" id="abSummaryQuote">
+          <span class="loading">正在读取统计结果…</span>
+        </div>
+        <ul>
+          <li><b>冷热两极</b>：约 26% 的房间常年“空闲”，而少量房间（134、Arcade 等）几乎一直被预约，属于高需求资源。</li>
+          <li><b>高峰集中</b>：预约开始集中在 0 时、20–21 时；凌晨 2–5 时几乎无人使用，错峰潜力大。</li>
+          <li><b>座位数相关性弱</b>：大房间并不必然更满（相关系数仅约 −0.17），位置与配套可能比容量更能决定热度。</li>
+          <li><b>模型结论</b>：复杂模型不必然更好；本数据上线性/岭回归时间外泛化最优（R²≈0.41）。</li>
+        </ul>
+      </section>
+      <!-- 面向人类的解读 -->
+      <section id="s-human" style="margin-top:34px;">
+        <h2>5️⃣ 面向人类的解读：这些曲线和数字，对你意味着什么？</h2>
+        <p>图表回答的是“数据是什么样的”；这一节尝试回答更重要的问题——<b>“然后呢？”</b>。我们把发现翻译成三类人的日常行动。</p>
+
+        <div class="human-card">
+          <h4>🎒 如果你是一名每天找自习室的学生</h4>
+          <p>· <b>错峰即省钱（时间）</b>：真正“爆满”的时段高度集中。与其 20:30 在热门房间门口徘徊，
+            不如提前 30 分钟，或换一间同时段低一级热度的房间——分析结果页的“热度明细目录”可以帮你 30 秒圈定候选。<br>
+            · <b>看趋势再出门</b>：预测页展示了“该房间这一天 24 小时会不会挤”的曲线。把“我要学习 2 小时”和曲线叠加，
+            选一段预计空闲的窗口出发，成功率更高。<br>
+            · <b>别被“凌晨峰值”误导</b>：0 时的高峰多为预约开始时间，不代表凌晨人最多；看清口径，才不会被数据吓到。</p>
+        </div>
+
+        <div class="human-card">
+          <h4>🏫 如果你在图书馆或后勤管理岗位</h4>
+          <p>· <b>把资源放到真正热的地方</b>：热度聚类把 46 个房间分成四级——对“爆满/热门”房间扩容座位、延长开放；
+            对常年“空闲”的房间，可评估位置与配套，避免“开了也没人用”。<br>
+            · <b>用错峰引导平滑高峰</b>：既然高峰集中在少数时段，可以通过开放时间调整、预约时段限制或“空闲房间推荐”把人流摊平。<br>
+            · <b>给值班与保洁更聪明的排班</b>：使用率曲线就是人流画像，可以作为开馆闭馆与人力调度的数据依据。</p>
+        </div>
+
+        <div class="human-card">
+          <h4>🔬 如果你关心数据与模型本身</h4>
+          <p>· <b>模型只解释约四成波动（R²≈0.41）</b>：剩下六成来自当日个体行为、临时安排等不可见因素。
+            这意味着平台适合做<b>趋势参考</b>，不宜被当成“确定无疑的预言”。<br>
+            · <b>“更强”的模型可能更差</b>：随机森林与梯度提升在时间外测试上 R² 为负，是一个很值得记住的工程教训——
+            部署前必须做时间外验证，而不是看训练集精度。<br>
+            · <b>相关性 ≠ 因果</b>：座位数与使用率弱负相关，不代表“减少座位就能提高使用率”，只提示我们：热度可能由位置、配套等更深的原因驱动。</p>
+        </div>
+
+        <div class="quote">技术分析的真正价值，不是替人做决定，而是<b>把决策从不透明的感觉，变成有依据的选择</b>——它让每个学生多一份从容，也让学校多一份精准。</div>
+      </section>
+
+      <!-- 局限与展望 -->
+      <section id="s-limit" style="margin-top:34px;">
+        <h2>6️⃣ 局限与下一步</h2>
+        <ul>
+          <li><b>口径局限</b>：数据是“预约占用”口径，不含实时在场人数与爽约情况，预测的是趋势而非真实到馆率。</li>
+          <li><b>特征局限</b>：缺少考试周、天气、节假日等上下文特征，这些通常是拥挤度的强影响因素。</li>
+          <li><b>展望</b>：接入实时预约 API 后，可将“历史统计 + 当前状态”联合预测；加入可解释方法（如 SHAP）让每个预测都能说清理由；增加面向管理员的资源调度后台。</li>
+        </ul>
+      </section>
+
+      <!-- 团队 -->
+      <section id="s-team" style="margin-top:34px;">
+        <h2>7️⃣ 团队与致谢</h2>
+        <p>本项目由五人课程团队协作完成：</p>
+        <ul>
+          <li>曹雨欣：数据获取与清洗，产出标准化数据集</li>
+          <li>洪敏瑜：描述统计、相关分析与使用规律挖掘</li>
+          <li>吕宝琳：K-Means 热度聚类与四类回归预测建模、评估</li>
+          <li>郑莹莹：Flask 后端、REST 接口、数据对接与部署联调</li>
+          <li>阮歆恬：前端页面、ECharts 可视化与交互设计</li>
+        </ul>
+        <p>感谢 Kaggle 公开数据集提供方让数据可复现，感谢指导教师在选题、进度与工程规范上的帮助。</p>
+      </section>
+
+
+    </article>
+
+    <!-- 右侧目录卡 -->
+    <aside class="sticky">
+      <div class="toc-card">
+        <h3 style="font-size:15px;">📑 本页目录</h3>
+        <a href="#s-intro">1 项目是做什么的<span>→</span></a>
+        <a href="#s-data">2 数据从哪里来<span>→</span></a>
+        <a href="#s-method">3 技术怎么分析<span>→</span></a>
+        <a href="#s-result">4 关键结果速览<span>→</span></a>
+        <a href="#s-human">5 对人类意味着什么<span>→</span></a>
+        <a href="#s-limit">6 局限与展望<span>→</span></a>
+        <a href="#s-team">7 团队与致谢<span>→</span></a>
+      </div>
+      <div class="panel" style="margin-top:16px;">
+        <h3 style="font-size:15px;">🔍 项目速览</h3>
+        <p class="mini-note">数据记录 <b id="abRecs">…</b> 条</p>
+        <p class="mini-note">自习室 <b id="abRooms">…</b> 间</p>
+        <p class="mini-note">整体平均使用率 <b id="abAvg">…</b></p>
+        <p class="mini-note">峰值时段 <b id="abPeak">…</b></p>
+        <p class="mini-note">回归最优 R² <b id="abR2">≈0.41</b></p>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <p><b>校园自习室数据分析与可视化 Web 平台</b></p>
+  <p class="foot-tech">基于 Python · Flask · Pandas · Scikit-learn · ECharts</p>
+  <p><a href="about.html">项目介绍 /about.html</a> · <a href="dashboard.html">数据看板</a> · <a href="analysis.html">分析结果</a> · <a href="prediction.html">预测展示</a></p>
+</footer>
+
+<script src="js/about.js"></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>预测展示 · 校园自习室数据分析平台</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">📚</span>
+      <span>校园自习室数据分析平台</span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">首页</a>
+      <a href="dashboard.html">数据看板</a>
+      <a href="analysis.html">分析结果</a>
+      <a href="prediction.html" class="active">预测展示</a>
+      <a href="about.html" class="nav-about">项目介绍</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="pagehead">
+    <span class="eyebrow">MODEL PREDICTION</span>
+    <h1>拥挤度预测展示</h1>
+    <p class="sub">四类回归模型在“2024 年 12 月测试集”上逐小时预测使用率：先看预测与真实值是否贴合，再评估哪些模型真正可用。</p>
+    <div class="meta">
+      <span class="chip blue">算法：LinearRegression / Ridge / RandomForest / HistGB</span>
+      <span class="chip">评测：时间外样本 · RMSE / MAE / R²</span>
+    </div>
+  </section>
+
+  <!-- 预测指标 -->
+  <section class="kpis">
+    <div class="kpi" style="--kpi-bg:#eff6ff;">
+      <div class="k-label">🧪 测试样本</div>
+      <div class="k-value" id="mSamples">…</div>
+      <div class="k-desc">46 自习室 × 25 天 × 24 小时</div>
+    </div>
+    <div class="kpi" style="--kpi-bg:#f0f9ff;">
+      <div class="k-label">🏢 覆盖自习室</div>
+      <div class="k-value" id="mRooms">…</div>
+      <div class="k-desc">测试集中有预测结果的自习室</div>
+    </div>
+    <div class="kpi" style="--kpi-bg:#ecfdf5;">
+      <div class="k-label">🏅 测试集最优 R²</div>
+      <div class="k-value" id="mBestR2">…</div>
+      <div class="k-desc">线性回归 / 岭回归（时间外泛化最好）</div>
+    </div>
+    <div class="kpi" style="--kpi-bg:#fffbeb;">
+      <div class="k-label">✅ 预测接口采用模型</div>
+      <div class="k-value" id="mChosen">岭回归</div>
+      <div class="k-desc">与线性回归精度相当，L2 正则更稳</div>
+    </div>
+  </section>
+
+  <!-- 曲线对比 -->
+  <section class="section">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>真实使用率 vs 四类模型预测（逐小时曲线）</h3>
+          <p class="panel-sub">0–23 时 · 真实值为测试集记录值 · 单位使用率 %</p>
+        </div>
+        <div class="panel-tools">
+          <label style="font-size:13px;color:#64748b;">自习室
+            <select id="roomSelect"></select>
+          </label>
+          <label style="font-size:13px;color:#64748b;">日期
+            <select id="dateSelect"></select>
+          </label>
+        </div>
+      </div>
+      <div id="trendChart" class="chart" style="height:430px;"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h3>🏆 该自习室 · 预测最拥挤 Top 3 时段</h3>
+        <p class="panel-sub">基于岭回归预测使用率计算（每当你计划自习，可先看这些时段是否适合你）</p>
+        <div id="crowdTop" class="loading">计算中…</div>
+      </div>
+      <div class="panel">
+        <h3>📈 曲线怎么读？</h3>
+        <p class="mini-note">黑色粗线为<b>真实使用率</b>，彩色虚线为各模型<b>预测</b>。二者越贴合，说明该模型越能还原这间自习室一天中的使用节奏。</p>
+        <p class="mini-note">从真实曲线可见：使用率在一天内“有峰有谷”，高峰往往出现在深夜 0 时前后与晚间 20–21 时。</p>
+        <p class="mini-note">预测值整体向均值靠拢：模型能抓住“大致趋势”，但很难复现当天突变——这是模型波动解释力约四成的直接体现。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 模型效果评价 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>模型效果评价</h2>
+      <p>在 2024 年 12 月测试集（27,600 个逐时样本）上比较四类回归模型</p>
+    </div>
+    <div class="panel">
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>模型</th><th>类型</th><th>RMSE ↓</th><th>MAE ↓</th><th>R² ↑</th><th>评价</th>
+            </tr>
+          </thead>
+          <tbody id="metricsBody">
+            <tr><td colspan="6" class="loading">正在读取模型指标…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>🔬 交叉验证如何选模型？</h3>
+        <p class="mini-note">时间序列 3 折交叉验证（CV，291,456 条样本）对比<b>线性回归 / 岭回归 / HistGB</b>：三者 RMSE 均在 0.27–0.31，R² 在 0.36–0.47；其中<b>岭回归</b>与线性回归精度几乎持平，因带 L2 正则（alpha=100）更稳、泛化风险更低，故后端预测接口采用 <b>pred_Ridge</b>。</p>
+        <p class="mini-note">随机森林因时间外 R² 为负且训练耗时较长，未纳入时间序列交叉验证候选。</p>
+      </div>
+      <div class="panel">
+        <h3>📉 为什么“更强的模型”反而更差？</h3>
+        <p class="mini-note">随机森林、梯度提升在训练集拟合能力强，但对<b>时间外（未来）</b>数据泛化差：测试 R² 为负意味着预测比“直接取历史均值”还差。</p>
+        <p class="mini-note">本项目刻意保留并展示这个“反面结果”，提醒：真实部署前必须做时间外验证，而不是只看训练精度。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 拥挤度等级 + 说明 -->
+  <section class="section">
+    <div class="grid2">
+      <div class="panel">
+        <h3>拥挤度等级口径</h3>
+        <p class="mini-note">🔥 <b>爆满</b>：预测使用率 ≥ 50%，基本满座</p>
+        <p class="mini-note">🧡 <b>热门</b>：35% ≤ 使用率 &lt; 50%，座位紧张</p>
+        <p class="mini-note">💙 <b>适中</b>：20% ≤ 使用率 &lt; 35%，有空座但陆续有人</p>
+        <p class="mini-note">💚 <b>空闲</b>：使用率 &lt; 20%，随到随学</p>
+      </div>
+      <div class="panel">
+        <h3>📋 预测口径与局限（诚实说明）</h3>
+        <p class="mini-note">· 预测输入：自习室编号、日期、小时；目标：该时段<b>使用率（0–1）</b>。<br>
+          · 数据为历史回归预测结果（reg_predictions.csv，2024-12），可用于交互演示与效果回看。<br>
+          · 模型整体仅能解释约四成波动，适合做<b>趋势参考</b>而非精确断言；择时择地请结合实际预约页面实时判断。<br>
+          · 数据规律对现实选择的更多启发，见<a href="about.html">项目介绍 /about.html</a>。</p>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+<footer class="footer">
+  <p><b>校园自习室数据分析与可视化 Web 平台</b></p>
+  <p class="foot-tech">基于 Python · Flask · Pandas · Scikit-learn · ECharts</p>
+  <p><a href="about.html">项目介绍 /about.html</a> · <a href="dashboard.html">数据看板</a> · <a href="analysis.html">分析结果</a> · <a href="prediction.html">预测展示</a></p>
+</footer>
+
+<script src="vendor/echarts.min.js"></script>
+<script src="js/prediction.js"></script>
+</body>
+</html>

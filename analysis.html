@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分析结果 · 校园自习室数据分析平台</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">📚</span>
+      <span>校园自习室数据分析平台</span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">首页</a>
+      <a href="dashboard.html">数据看板</a>
+      <a href="analysis.html" class="active">分析结果</a>
+      <a href="prediction.html">预测展示</a>
+      <a href="about.html" class="nav-about">项目介绍</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="pagehead">
+    <span class="eyebrow">DATA INSIGHTS</span>
+    <h1>数据分析结果</h1>
+    <p class="sub">从“整体节奏”（数据看板）走进“房间之间”——热度聚类等级、热门自习室排行、自习室明细目录与特征相关性。</p>
+    <div class="meta">
+      <span class="chip blue">算法：描述统计 + K-Means 热度聚类</span>
+      <span class="chip">维度：房间 × 平均/峰值使用率 × 记录量</span>
+    </div>
+  </section>
+
+  <!-- 摘要 -->
+  <section class="section">
+    <div class="quote" id="aSummaryWrap">
+      <span class="loading">正在读取分析摘要…</span>
+    </div>
+  </section>
+
+  <!-- 01 热度聚类分布 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>热度聚类分布</h2>
+      <p>沿用后端接口与模型组一致的口径：按平均使用率把自习室映射为 4 个热度等级</p>
+    </div>
+
+    <div class="grid31">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>46 间自习室 · 热度等级构成</h3>
+            <p class="panel-sub">环形图内数字为该等级房间数</p>
+          </div>
+        </div>
+        <div id="clusterChart" class="chart" style="height:360px;"></div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <h3>热度等级说明</h3>
+          <p class="mini-note">🔥 <b>爆满（4 级）</b>：平均使用率 ≥ 40%，长期抢手</p>
+          <p class="mini-note">🌤️ <b>热门（3 级）</b>：30% ≤ 平均使用率 &lt; 40%</p>
+          <p class="mini-note">🌥️ <b>正常（2 级）</b>：20% ≤ 平均使用率 &lt; 30%</p>
+          <p class="mini-note">❄️ <b>空闲（1 级）</b>：平均使用率 &lt; 20%，多数时间有座</p>
+        </div>
+        <div class="panel">
+          <h3>等级速览</h3>
+          <div id="lvlStats" class="loading">计算中…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 热门 TOP10 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>热门自习室 TOP 10</h2>
+      <p>按平均使用率从高到低排序，右侧给出最热房间速览</p>
+    </div>
+    <div class="grid31">
+      <div class="panel">
+        <div id="topBarChart" class="chart" style="height:400px;"></div>
+      </div>
+      <div>
+        <div class="panel">
+          <h3>🏆 全站最热自习室</h3>
+          <p style="font-size:34px;font-weight:800;color:#2563eb;margin:4px 0;" id="firstRoom">…</p>
+          <p class="mini-note">平均使用率约 <b id="firstRoomVal">…</b>，热度等级为<b id="firstRoomLvl">…</b>。</p>
+        </div>
+        <div class="panel">
+          <h3>⚠️ 读榜提醒</h3>
+          <p class="mini-note">排名靠前的 <b>134</b> 号（6 条）与 <b>Arcade</b>（9 条）样本量很小，
+            反映的是“几乎每次都被约满”的极端场景；<b>102H、304、326</b> 等房间样本量大（1200+ 条），
+            其高使用率统计上更稳健。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 全部自习室热度明细（可检索目录） -->
+  <section class="section">
+    <div class="section-head">
+      <h2>自习室热度明细目录</h2>
+      <p>46 间自习室一张表看全：平均 / 峰值使用率、记录数、热度等级（可筛选、分页）</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>全部自习室</h3>
+          <p class="panel-sub">“记录数”越大代表该房间的样本越充足</p>
+        </div>
+        <div class="panel-tools">
+          <label style="font-size:13px;color:#64748b;">热度等级
+            <select id="levelFilter">
+              <option value="all">全部</option>
+              <option value="1">空闲</option>
+              <option value="2">正常</option>
+              <option value="3">热门</option>
+              <option value="4">爆满</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>排名</th><th>自习室</th><th>平均使用率</th><th>峰值使用率</th>
+              <th>样本记录</th><th>热度等级</th><th>初步建议</th>
+            </tr>
+          </thead>
+          <tbody id="roomTableBody">
+            <tr><td colspan="7" class="loading">正在读取热度数据…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <button id="prevPage">上一页</button>
+        <span id="pageInfo">…</span>
+        <button id="nextPage">下一页</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 特征相关性分析 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>特征相关性分析</h2>
+      <p>座位总数、开始小时、星期几与使用率两两之间的相关关系（值域 -1 ~ 1）</p>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <div id="corrChart" class="chart" style="height:400px;"></div>
+      </div>
+      <div>
+        <div class="panel">
+          <h3>三个最值得读的相关</h3>
+          <p class="mini-note">🪑 <b>座位总数 → 使用率</b>：<b id="c1">…</b><br>
+            座位越多的自习室，平均占用比例反而略低（弱负相关）。</p>
+          <p class="mini-note">🕐 <b>开始小时 → 使用率</b>：<b id="c2">…</b><br>
+            存在正相关但很弱：个别时段（0 时、20–21 时）集中，其余时段差异不大。</p>
+          <p class="mini-note">📅 <b>星期 → 使用率</b>：<b id="c3">…</b><br>
+            相关性接近 0：周几对“会不会被约满”几乎没有解释力。</p>
+        </div>
+        <div class="panel">
+          <h3>怎么理解“相关性很弱”？</h3>
+          <p class="mini-note">三项相关性绝对值都在 0.17 以内，说明“座位数 / 日历时间”远不能单独解释一间自习室会不会满。
+            真实使用取决于当次学习需求、时段习惯与随机因素——这正是回归模型也只能解释约四成波动的原因（见
+            <a href="prediction.html">预测展示</a>）。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 结论 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>分析结论</h2>
+      <p>把上面的图表翻译成一句话结论</p>
+    </div>
+    <div class="panel">
+      <div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));">
+        <div class="mini-note"><b>① 冷热分明。</b>大部分自习室集中在“正常/热门”区间，真正常年爆满与常年空闲的都只是少数，冷热两极分化是资源错配的直观证据。</div>
+        <div class="mini-note"><b>② 头部效应明显。</b>134、Arcade 等房间近乎“一直被预约”，是典型的高需求房间；建议优先扩容或延长其开放时段。</div>
+        <div class="mini-note"><b>③ 大房间≠更满。</b>座位总数与使用率为弱负相关，说明开放大房间并不必然带来高占用——反而可能因位置/配套等原因闲置。</div>
+        <div class="mini-note"><b>④ 时间不是全部。</b>时段与星期相关都很弱，真正的高峰集中在少数几个时段（0 时与 20–21 时），错峰价值巨大。</div>
+        <div class="mini-note"><b>⑤ 下一站预测。</b>能否提前一小时预判拥挤？请进入<a href="prediction.html">预测展示</a>查看四类模型的答案与局限。</div>
+        <div class="mini-note"><b>⑥ 人之常情。</b>数据规律服务于个人选择，也服务于后勤调度；对人类的意义与行动建议见<a href="about.html">项目介绍 /about.html</a>。</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p><b>校园自习室数据分析与可视化 Web 平台</b></p>
+  <p class="foot-tech">基于 Python · Flask · Pandas · Scikit-learn · ECharts</p>
+  <p><a href="about.html">项目介绍 /about.html</a> · <a href="dashboard.html">数据看板</a> · <a href="analysis.html">分析结果</a> · <a href="prediction.html">预测展示</a></p>
+</footer>
+
+<script src="vendor/echarts.min.js"></script>
+<script src="js/analysis.js"></script>
+</body>
+</html>

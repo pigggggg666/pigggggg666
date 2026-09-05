@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首页 · 校园自习室数据分析与可视化平台</title>
+<meta name="description" content="基于 Python 与真实公开数据打造的校园自习室数据分析与可视化 Web 平台：数据看板、使用规律分析、拥挤度预测。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">📚</span>
+      <span>校园自习室数据分析平台</span>
+    </a>
+    <nav class="nav">
+      <a href="index.html" class="active">首页</a>
+      <a href="dashboard.html">数据看板</a>
+      <a href="analysis.html">分析结果</a>
+      <a href="prediction.html">预测展示</a>
+      <a href="about.html" class="nav-about">项目介绍</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div>
+      <span class="kick">📊 基于 Python 的校园自习室数据分析与可视化 Web 平台</span>
+      <h1>让数据帮你找到<br>那一间<em>安静</em>的自习室</h1>
+      <p class="lede">
+        基于真实公开预约数据，统计自习室的使用规律，结合
+        K-Means 热度聚类与回归预测，为“去哪儿自习、几点去、会不会挤”
+        提供一份数据答案。
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="dashboard.html">进入数据看板 →</a>
+        <a class="btn btn-ghost" href="about.html">了解本项目</a>
+      </div>
+    </div>
+
+    <aside class="hero-mini">
+      <h3>🚀 项目数据速览</h3>
+      <div class="hm-row"><span>数据记录</span><strong id="sRecords">51,826<small> 条</small></strong></div>
+      <div class="hm-row"><span>自习室数量</span><strong id="sRooms">46<small> 间</small></strong></div>
+      <div class="hm-row"><span>整体平均使用率</span><strong id="sAvg">29.27<small>%</small></strong></div>
+      <div class="hm-row"><span>数据覆盖</span><strong>2024<small> 全年</small></strong></div>
+      <div class="hm-row"><span>算法模型</span><strong>4<small> 类回归 + K-Means</small></strong></div>
+      <a class="hm-cta" href="about.html">项目介绍（数据、方法与对人类的意义）→</a>
+    </aside>
+  </section>
+
+  <!-- 目录 -->
+  <section class="section" id="toc">
+    <div class="section-head">
+      <h2>网站目录</h2>
+      <p>平台按“从数据看到规律，再由规律做出预测”的思路，划分为以下模块，各模块职责不重复。</p>
+    </div>
+
+    <div class="module-grid">
+      <div class="module" style="--m-c1:#2563eb;--m-c2:#06b6d4;">
+        <div class="m-icon">🧭</div>
+        <h3>数据看板</h3>
+        <p>用一组 KPI 与两张趋势图，快速掌握 51,826 条预约数据呈现的整体使用节奏：24 小时如何变化、工作日与周末差多少。</p>
+        <a class="go" href="dashboard.html">去数据看板 <span>→</span></a>
+      </div>
+      <div class="module" style="--m-c1:#7c3aed;--m-c2:#db2777;">
+        <div class="m-icon">🔍</div>
+        <h3>分析结果</h3>
+        <p>深入挖掘使用规律：热度聚类等级分布、热门自习室排行、46 间自习室热度明细，以及座位数/时段等因素的相关性。</p>
+        <a class="go" href="analysis.html">看分析结果 <span>→</span></a>
+      </div>
+      <div class="module" style="--m-c1:#0d9488;--m-c2:#f59e0b;">
+        <div class="m-icon">🤖</div>
+        <h3>预测展示</h3>
+        <p>对比四类回归模型对“各时段使用率”的预测曲线与真实值，查看模型指标，理解拥挤度预测的可靠程度。</p>
+        <a class="go" href="prediction.html">看预测效果 <span>→</span></a>
+      </div>
+      <div class="module" style="--m-c1:#ea580c;--m-c2:#f43f5e;">
+        <div class="m-icon">👥</div>
+        <h3>项目介绍</h3>
+        <p>面向第一次访问的人：项目为什么做、数据从哪里来、技术怎么分析，以及这些分析结果对人类到底意味着什么。</p>
+        <a class="go" href="about.html">打开项目介绍 <span>→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 数据流向 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>数据分析流程</h2>
+      <p>一条真实数据集如何变成可交互的分析与预测结果</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="s-no">1</div><b>数据获取</b><p>Kaggle 真实预约数据</p></div>
+      <div class="step"><div class="s-no">2</div><b>数据清洗</b><p>去重 / 缺失值 / 格式化</p></div>
+      <div class="step"><div class="s-no">3</div><b>统计分析</b><p>时段 / 星期 / 热度挖掘</p></div>
+      <div class="step"><div class="s-no">4</div><b>热度聚类</b><p>K-Means 等级划分</p></div>
+      <div class="step"><div class="s-no">5</div><b>回归预测</b><p>四模型交叉验证对比</p></div>
+      <div class="step"><div class="s-no">6</div><b>可视化</b><p>Flask + ECharts 展示</p></div>
+    </div>
+  </section>
+
+  <!-- 项目速览 + 项目介绍入口 -->
+  <section class="section">
+    <div class="about-cta">
+      <div>
+        <h3>👋 第一次来到这个平台？</h3>
+        <p>花三分钟阅读《项目介绍》：我们从真实数据中发现了什么，以及它对每天找自习室的你意味着什么。</p>
+      </div>
+      <a class="btn btn-primary" href="about.html">阅读项目介绍（/about.html）→</a>
+    </div>
+    <div class="grid2" style="margin-top:20px;">
+      <div class="panel">
+        <h3 style="font-size:16px;">🛠️ 技术栈</h3>
+        <div class="inline-list">
+          <span>Python 3</span><span>Pandas / NumPy</span><span>Scikit-learn</span>
+          <span>Flask</span><span>HTML / CSS / JavaScript</span><span>ECharts</span><span>Git</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 style="font-size:16px;">👩‍💻 团队分工</h3>
+        <div class="inline-list">
+          <span>曹雨欣 · 数据清洗</span><span>洪敏瑜 · 统计分析</span>
+          <span>吕宝琳 · 聚类与预测</span><span>郑莹莹 · Flask 后端</span><span>阮歆恬 · 前端可视化</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p><b>校园自习室数据分析与可视化 Web 平台</b></p>
+  <p class="foot-tech">基于 Python · Flask · Pandas · Scikit-learn · ECharts</p>
+  <p>数据来源：Kaggle “50,000+ University Library Room Reservations” 真实公开数据集 · 未使用模拟数据</p>
+</footer>
+
+<script src="js/index.js"></script>
+</body>
+</html>

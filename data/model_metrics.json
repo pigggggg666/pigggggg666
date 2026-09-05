@@ -1,0 +1,48 @@
+{
+  "test_dec": {
+    "LinearRegression": {
+      "samples": 27600,
+      "rmse": 0.271743,
+      "mae": 0.175556,
+      "r2": 0.41444
+    },
+    "Ridge": {
+      "samples": 27600,
+      "rmse": 0.271746,
+      "mae": 0.175558,
+      "r2": 0.414431
+    },
+    "RandomForest": {
+      "samples": 27600,
+      "rmse": 0.44297,
+      "mae": 0.25553,
+      "r2": -0.555971
+    },
+    "HistGB": {
+      "samples": 27600,
+      "rmse": 0.385392,
+      "mae": 0.280754,
+      "r2": -0.177766
+    }
+  },
+  "crossval": {
+    "LinearRegression": {
+      "samples": 291456,
+      "rmse": 0.275781,
+      "mae": 0.188138,
+      "r2": 0.47337
+    },
+    "Ridge": {
+      "samples": 291456,
+      "rmse": 0.275748,
+      "mae": 0.18809,
+      "r2": 0.473496
+    },
+    "HistGB": {
+      "samples": 291456,
+      "rmse": 0.303015,
+      "mae": 0.18029,
+      "r2": 0.364223
+    }
+  }
+}

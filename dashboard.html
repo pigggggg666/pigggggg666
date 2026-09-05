@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据看板 · 校园自习室数据分析平台</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">📚</span>
+      <span>校园自习室数据分析平台</span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">首页</a>
+      <a href="dashboard.html" class="active">数据看板</a>
+      <a href="analysis.html">分析结果</a>
+      <a href="prediction.html">预测展示</a>
+      <a href="about.html" class="nav-about">项目介绍</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="pagehead">
+    <span class="eyebrow">DATA DASHBOARD</span>
+    <h1>数据看板</h1>
+    <p class="sub">不重复数据细节，只看“大局”——整体预约规模、24 小时使用节奏与一周变化，让访问者 30 秒建立直觉。</p>
+    <div class="meta">
+      <span class="chip blue">📅 数据覆盖 2024 全年</span>
+      <span class="chip">数据来源：Kaggle 真实公开预约数据集</span>
+      <span class="chip">样本：46 间自习室 × 全天时段</span>
+    </div>
+  </section>
+
+  <!-- 核心指标 -->
+  <section class="kpis">
+    <div class="kpi" style="--kpi-bg:#eff6ff;">
+      <div class="k-label">🗂️ 预约记录总数</div>
+      <div class="k-value" id="kRecords">…</div>
+      <div class="k-desc">2024 年全年图书馆自习室预约记录</div>
+    </div>
+    <div class="kpi" style="--kpi-bg:#ecfdf5;">
+      <div class="k-label">🏢 自习室数量</div>
+      <div class="k-value" id="kRooms">…</div>
+      <div class="k-desc">纳入统计与建模的自习室（房间）</div>
+    </div>
+    <div class="kpi" style="--kpi-bg:#f0f9ff;">
+      <div class="k-label">📈 整体平均使用率</div>
+      <div class="k-value" id="kAvg">…</div>
+      <div class="k-desc">全量样本平均：预约占用占比</div>
+    </div>
+    <div class="kpi" style="--kpi-bg:#fffbeb;">
+      <div class="k-label">🎚️ 使用率标准差</div>
+      <div class="k-value" id="kStd">…</div>
+      <div class="k-desc">波动越大 = 时段冷热越不均衡</div>
+    </div>
+    <div class="kpi" style="--kpi-bg:#fef2f2;">
+      <div class="k-label">🔥 高峰时段</div>
+      <div class="k-value" id="kPeak">…</div>
+      <div class="k-desc">平均使用率最高的预约开始小时</div>
+    </div>
+    <div class="kpi" style="--kpi-bg:#fdf4ff;">
+      <div class="k-label">🏆 平均使用率最高房间</div>
+      <div class="k-value" id="kTop">…</div>
+      <div class="k-desc">该房间热度详情见「分析结果」页</div>
+    </div>
+  </section>
+
+  <!-- 总体趋势 -->
+  <section class="grid2">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>24 小时平均使用率趋势</h3>
+          <p class="panel-sub">0–23 时 · 全部自习室平均 · 单位：使用率 %</p>
+        </div>
+      </div>
+      <div id="hourChart" class="chart"></div>
+      <p class="mini-note" style="margin-top:10px;">💡 读图：深夜 0 时、傍晚 20–21 时是预约开始最集中的时段；凌晨 2–5 时几乎无人使用。使用率指该时段预约占用的平均比例，并非“在场人数”。</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>一周七天使用率对比</h3>
+          <p class="panel-sub">周一 → 周日 · 不同星期是否影响自习热度</p>
+        </div>
+      </div>
+      <div id="weekChart" class="chart"></div>
+      <p class="mini-note" style="margin-top:10px;">💡 读图：周五、周六、周日平均使用率略高于周一至周四；周日为一周最高。周末与工作日差异约 4 个百分点。</p>
+    </div>
+  </section>
+
+    <!-- 使用率画像 + 口径说明 -->
+  <section class="grid13">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>使用率画像 · 描述统计</h3>
+          <p class="panel-sub">对 51,826 条样本整体使用率的分布描述</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>指标</th><th>数值</th><th>说明</th></tr></thead>
+          <tbody id="statBody">
+            <tr><td colspan="3" class="loading">正在读取统计数据…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mini-note" style="margin-top:12px;">
+        📖 由于大量样本的使用率为 0%（深夜无人预约），中位数（约 <b id="medVal">25%</b>）明显低于平均值
+        （约 <b id="meanVal">29%</b>），说明使用率呈右偏分布：少数热门时段拉高了整体均值。
+      </p>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h3>🌗 冷热对比</h3>
+        <p class="mini-note">🏆 最热 3 小时：<br><b id="topHours">…</b></p>
+        <p class="mini-note">🥶 最冷 3 小时：<br><b id="lowHours">…</b></p>
+        <p class="mini-note">🗓️ 周末平均 <b id="weekendAvg">…</b> vs 工作日平均 <b id="weekdayAvg">…</b></p>
+      </div>
+      <div class="panel">
+        <h3>📋 口径说明</h3>
+        <p class="mini-note">
+          · <b>使用率</b>：自习室某小时被预约占用时长占该小时的比例（0–1），
+          全量聚合为整体平均使用率。<br>
+          · <b>小时</b>：以预约的开始小时计。<br>
+          · 本页只呈现整体趋势；房间排行、聚类与相关分析请看
+          <a href="analysis.html">分析结果</a>，模型预测请看
+          <a href="prediction.html">预测展示</a>。
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+<footer class="footer">
+  <p><b>校园自习室数据分析与可视化 Web 平台</b></p>
+  <p class="foot-tech">基于 Python · Flask · Pandas · Scikit-learn · ECharts</p>
+  <p><a href="about.html">项目介绍 /about.html</a> · <a href="dashboard.html">数据看板</a> · <a href="analysis.html">分析结果</a> · <a href="prediction.html">预测展示</a></p>
+</footer>
+
+<script src="vendor/echarts.min.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
